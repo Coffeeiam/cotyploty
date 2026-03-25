@@ -1,0 +1,637 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Konfigurátor | Cotyploty</title>
+    <meta name="description"
+          content="Konfigurátor orientační ceny oplocení." />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header class="header" id="top">
+        <div class="nav-wrap">
+            <a href="index.html" class="nav-brand">
+                <img src="images/logo.png" alt="Logo" class="logo-img">
+            </a>
+
+            <button class="burger" id="burger" aria-label="Otevřít menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="index.html#pricing" class="nav-link">Nacenění</a>
+                <a href="realizace.html" class="nav-link">Realizace</a>
+                <a href="konfigurator.html" class="nav-link">Konfigurátor</a>
+                <a href="index.html#contact" class="nav-link">Kontakty</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="section">
+        <div class="section-heading">
+            <p class="section-kicker">KONFIGURÁTOR</p>
+            <h1>Orientační kalkulace oplocení</h1>
+            <p class="section-text">
+                Klikáním do plochy zakreslete tvar pozemku. Poté doplňte délky jednotlivých stran,
+                vyberte typ oplocení a zadejte počet branek a bran.
+            </p>
+        </div>
+
+        <div class="config-layout">
+            <section class="config-card">
+                <div class="config-card-head">
+                    <h2>Krok 1: Tvar pozemku</h2>
+                    <p>Klikněte do plochy a přidávejte body. Minimálně 3 body.</p>
+                </div>
+
+                <div class="plot-toolbar">
+                    <button type="button" class="btn btn-secondary config-btn" id="closeShapeBtn">
+                        Uzavřít tvar
+                    </button>
+                    <button type="button" class="btn btn-secondary config-btn" id="undoPointBtn">
+                        Zpět
+                    </button>
+                    <button type="button" class="btn btn-secondary config-btn" id="resetPlotBtn">
+                        Vymazat vše
+                    </button>
+                </div>
+
+                <div class="plot-canvas-wrap">
+                    <svg id="plotSvg" class="plot-svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet">
+                        <rect x="0" y="0" width="800" height="500" class="plot-bg"></rect>
+                        <g id="gridLayer"></g>
+                        <g id="shapeLayer"></g>
+                        <g id="pointLayer"></g>
+                    </svg>
+                </div>
+
+                <div class="config-note" id="plotStatus">
+                    Zatím nebyl přidán žádný bod.
+                </div>
+            </section>
+
+            <section class="config-card">
+                <div class="config-card-head">
+                    <h2>Krok 2: Parametry</h2>
+                    <p>Doplňte délky stran a další prvky.</p>
+                </div>
+
+                <form id="configForm" class="config-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fenceType">Typ oplocení</label>
+                            <select id="fenceType">
+                                <option value="panel_2d">Panelové oplocení 2D</option>
+                                <option value="panel_3d">Panelové oplocení 3D</option>
+                                <option value="chainlink">Čtyřhranné pletivo</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fenceHeight">Výška plotu</label>
+                            <select id="fenceHeight">
+                                <option value="1.2">1,2 m</option>
+                                <option value="1.5">1,5 m</option>
+                                <option value="1.73" selected>1,73 m</option>
+                                <option value="2.0">2,0 m</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gateWicketCount">Počet branek</label>
+                            <input type="number" id="gateWicketCount" min="0" step="1" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gateWicketWidth">Šířka 1 branky (m)</label>
+                            <input type="number" id="gateWicketWidth" min="0" step="0.1" value="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gateCount">Počet bran</label>
+                            <input type="number" id="gateCount" min="0" step="1" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gateWidth">Šířka 1 brány (m)</label>
+                            <input type="number" id="gateWidth" min="0" step="0.1" value="4">
+                        </div>
+                    </div>
+
+                    <div class="config-subsection">
+                        <h3>Délky stran pozemku</h3>
+                        <div id="sideInputs" class="side-inputs">
+                            <p class="muted-text">Nejprve zakreslete a uzavřete tvar pozemku.</p>
+                        </div>
+                    </div>
+
+                    <div class="config-subsection">
+                        <h3>Orientační výpočet</h3>
+                        <div class="result-box">
+                            <div class="result-row">
+                                <span>Obvod pozemku</span>
+                                <strong id="resultPerimeter">0 m</strong>
+                            </div>
+                            <div class="result-row">
+                                <span>Šířka bran a branek celkem</span>
+                                <strong id="resultOpenings">0 m</strong>
+                            </div>
+                            <div class="result-row">
+                                <span>Délka plotu k realizaci</span>
+                                <strong id="resultFenceLength">0 m</strong>
+                            </div>
+                            <div class="result-row">
+                                <span>Orientační cena bez DPH</span>
+                                <strong id="resultPrice">0 Kč</strong>
+                            </div>
+                        </div>
+
+                        <div class="config-actions">
+                            <button type="button" class="btn btn-primary" id="calculateBtn">
+                                Spočítat cenu
+                            </button>
+                        </div>
+
+                        <p class="config-note">
+                            Výsledná cena je pouze orientační a přesnou cenu vám vypočítáme až při přesném zaměření pozemku a konzultaci.
+                        </p>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>©ASH Design. Všechna práva vyhrazena.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>(() => {
+      const burger = document.getElementById('burger');
+      const navMenu = document.getElementById('navMenu');
+
+      if (burger && navMenu) {
+        burger.addEventListener('click', () => {
+          burger.classList.toggle('active');
+          navMenu.classList.toggle('active');
+          burger.setAttribute('aria-expanded', burger.classList.contains('active') ? 'true' : 'false');
+        });
+
+        document.querySelectorAll('.nav-link').forEach((link) => {
+          link.addEventListener('click', () => {
+            burger.classList.remove('active');
+            navMenu.classList.remove('active');
+            burger.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+
+      const prices = {
+        panel_2d: {
+          '1.2': { perMeter: 590, wicket: 8500, gate: 21500 },
+          '1.5': { perMeter: 690, wicket: 9200, gate: 22900 },
+          '1.73': { perMeter: 790, wicket: 9800, gate: 24500 },
+          '2.0': { perMeter: 940, wicket: 10900, gate: 26900 }
+        },
+        panel_3d: {
+          '1.2': { perMeter: 540, wicket: 7900, gate: 19800 },
+          '1.5': { perMeter: 620, wicket: 8600, gate: 21400 },
+          '1.73': { perMeter: 710, wicket: 9300, gate: 22900 },
+          '2.0': { perMeter: 860, wicket: 10400, gate: 25500 }
+        },
+        chainlink: {
+          '1.2': { perMeter: 350, wicket: 6900, gate: 16500 },
+          '1.5': { perMeter: 410, wicket: 7400, gate: 17800 },
+          '1.73': { perMeter: 470, wicket: 7900, gate: 18900 },
+          '2.0': { perMeter: 540, wicket: 8600, gate: 20400 }
+        }
+      };
+
+      const svg = document.getElementById('plotSvg');
+      const pointLayer = document.getElementById('pointLayer');
+      const shapeLayer = document.getElementById('shapeLayer');
+      const gridLayer = document.getElementById('gridLayer');
+      const sideInputs = document.getElementById('sideInputs');
+      const plotStatus = document.getElementById('plotStatus');
+
+      const closeShapeBtn = document.getElementById('closeShapeBtn');
+      const undoPointBtn = document.getElementById('undoPointBtn');
+      const resetPlotBtn = document.getElementById('resetPlotBtn');
+      const calculateBtn = document.getElementById('calculateBtn');
+
+      const fenceType = document.getElementById('fenceType');
+      const fenceHeight = document.getElementById('fenceHeight');
+      const gateWicketCount = document.getElementById('gateWicketCount');
+      const gateWicketWidth = document.getElementById('gateWicketWidth');
+      const gateCount = document.getElementById('gateCount');
+      const gateWidth = document.getElementById('gateWidth');
+
+      const resultPerimeter = document.getElementById('resultPerimeter');
+      const resultOpenings = document.getElementById('resultOpenings');
+      const resultFenceLength = document.getElementById('resultFenceLength');
+      const resultPrice = document.getElementById('resultPrice');
+
+    const points = [];
+    let isClosed = false;
+    let baseDirections = [];
+    let originalStartPoint = null;
+
+    function getDistance(pointA, pointB) {
+        const dx = pointB.x - pointA.x;
+        const dy = pointB.y - pointA.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function captureBaseDirections() {
+        baseDirections = [];
+
+        if (points.length < 3) return;
+
+        originalStartPoint = { ...points[0] };
+
+        for (let i = 0; i < points.length; i++) {
+            const current = points[i];
+            const next = points[(i + 1) % points.length];
+            const dx = next.x - current.x;
+            const dy = next.y - current.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance === 0) {
+                baseDirections.push({ x: 1, y: 0 });
+            } else {
+                baseDirections.push({
+                    x: dx / distance,
+                    y: dy / distance
+                });
+            }
+        }
+    }
+
+    function rebuildShapeFromLengths() {
+        if (!isClosed || points.length < 3) return;
+
+        const inputs = document.querySelectorAll('.side-length-input');
+        if (!inputs.length) return;
+
+        const lengths = Array.from(inputs).map((input) => Number(input.value) || 0);
+        if (lengths.some((value) => value <= 0)) return;
+
+        const scale = 20; // 1 m = 20 px
+
+        // Speciální logika pro čtyřúhelník
+        if (points.length === 4) {
+            const topLength = lengths[0] * scale;
+            const rightLength = lengths[1] * scale;
+            const bottomLength = lengths[2] * scale;
+            const leftLength = lengths[3] * scale;
+
+            // Výchozí střed plochy
+            const centerX = 400;
+            const centerY = 250;
+
+            // Uděláme lichoběžníkový/obdélníkový tvar:
+            // p1 ---- p2
+            // |        |
+            // p4 ---- p3
+
+            const maxWidth = Math.max(topLength, bottomLength);
+            const maxHeight = Math.max(leftLength, rightLength);
+
+            const startXTop = centerX - topLength / 2;
+            const endXTop = centerX + topLength / 2;
+
+            const startXBottom = centerX - bottomLength / 2;
+            const endXBottom = centerX + bottomLength / 2;
+
+            const topYLeft = centerY - leftLength / 2;
+            const topYRight = centerY - rightLength / 2;
+
+            const bottomYLeft = centerY + leftLength / 2;
+            const bottomYRight = centerY + rightLength / 2;
+
+            const newPoints = [
+                { x: startXTop, y: topYLeft },       // p1
+                { x: endXTop, y: topYRight },        // p2
+                { x: endXBottom, y: bottomYRight },  // p3
+                { x: startXBottom, y: bottomYLeft }  // p4
+            ];
+
+            points.length = 0;
+            newPoints.forEach((p) => points.push(p));
+
+            renderShape();
+            renderPoints();
+            plotStatus.textContent = 'Tvar byl přepočítán podle zadaných délek stran.';
+            return;
+        }
+
+        // Fallback pro ostatní polygony
+        if (baseDirections.length !== points.length) return;
+
+        const newPoints = [];
+        let currentX = originalStartPoint.x;
+        let currentY = originalStartPoint.y;
+
+        newPoints.push({ x: currentX, y: currentY });
+
+        for (let i = 0; i < lengths.length - 1; i++) {
+            currentX += baseDirections[i].x * lengths[i] * scale;
+            currentY += baseDirections[i].y * lengths[i] * scale;
+
+            newPoints.push({
+                x: currentX,
+                y: currentY
+            });
+        }
+
+        const xs = newPoints.map((p) => p.x);
+        const ys = newPoints.map((p) => p.y);
+        const minX = Math.min(...xs);
+        const maxX = Math.max(...xs);
+        const minY = Math.min(...ys);
+        const maxY = Math.max(...ys);
+
+        const shapeWidth = maxX - minX;
+        const shapeHeight = maxY - minY;
+
+        const offsetX = 400 - (minX + shapeWidth / 2);
+        const offsetY = 250 - (minY + shapeHeight / 2);
+
+        for (let i = 0; i < newPoints.length; i++) {
+            newPoints[i].x = Math.max(20, Math.min(780, newPoints[i].x + offsetX));
+            newPoints[i].y = Math.max(20, Math.min(480, newPoints[i].y + offsetY));
+        }
+
+        points.length = 0;
+        newPoints.forEach((p) => points.push(p));
+
+        renderShape();
+        renderPoints();
+        plotStatus.textContent = 'Tvar byl přepočítán podle zadaných délek stran.';
+    }
+
+    function updateStatusFromLengths(lengths) {
+        if (!isClosed) return;
+
+        const closureInfo = estimateClosureError(lengths);
+
+        if (closureInfo < 0.5) {
+            plotStatus.textContent = `Tvar byl přepočítán podle zadaných délek.`;
+        } else {
+            plotStatus.textContent = `Tvar byl přepočítán podle zadaných délek. Pozn.: kombinace délek nemusí přesně uzavírat původní polygon.`;
+        }
+    }
+
+    function estimateClosureError(lengths) {
+        if (!baseDirections.length || baseDirections.length !== lengths.length) return 0;
+
+        const scale = 20;
+        let x = 0;
+        let y = 0;
+
+        for (let i = 0; i < lengths.length; i++) {
+            x += baseDirections[i].x * lengths[i] * scale;
+            y += baseDirections[i].y * lengths[i] * scale;
+        }
+
+        return Math.sqrt(x * x + y * y) / scale;
+    }
+
+      function formatNumber(value) {
+        return new Intl.NumberFormat('cs-CZ', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 1
+        }).format(value);
+      }
+
+      function formatCurrency(value) {
+        return new Intl.NumberFormat('cs-CZ', {
+          style: 'currency',
+          currency: 'CZK',
+          maximumFractionDigits: 0
+        }).format(value);
+      }
+
+      function drawGrid() {
+        gridLayer.innerHTML = '';
+        for (let x = 0; x <= 800; x += 40) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', x);
+          line.setAttribute('y1', 0);
+          line.setAttribute('x2', x);
+          line.setAttribute('y2', 500);
+          line.setAttribute('class', 'grid-line');
+          gridLayer.appendChild(line);
+        }
+
+        for (let y = 0; y <= 500; y += 40) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', 0);
+          line.setAttribute('y1', y);
+          line.setAttribute('x2', 800);
+          line.setAttribute('y2', y);
+          line.setAttribute('class', 'grid-line');
+          gridLayer.appendChild(line);
+        }
+      }
+
+      function renderPoints() {
+        pointLayer.innerHTML = '';
+        points.forEach((point, index) => {
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', point.x);
+          circle.setAttribute('cy', point.y);
+          circle.setAttribute('r', 6);
+          circle.setAttribute('class', 'plot-point');
+          pointLayer.appendChild(circle);
+
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', point.x + 10);
+          text.setAttribute('y', point.y - 10);
+          text.setAttribute('class', 'plot-label');
+          text.textContent = `${index + 1}`;
+          pointLayer.appendChild(text);
+        });
+      }
+
+      function renderShape() {
+        shapeLayer.innerHTML = '';
+
+        if (points.length === 0) return;
+
+        if (points.length >= 2) {
+          const polyline = document.createElementNS('http://www.w3.org/2000/svg', isClosed ? 'polygon' : 'polyline');
+          const pointsAttr = points.map((p) => `${p.x},${p.y}`).join(' ');
+          polyline.setAttribute('points', pointsAttr);
+          polyline.setAttribute('class', isClosed ? 'plot-polygon' : 'plot-polyline');
+          shapeLayer.appendChild(polyline);
+        }
+      }
+
+      function updateStatus() {
+        if (points.length === 0) {
+          plotStatus.textContent = 'Zatím nebyl přidán žádný bod.';
+          return;
+        }
+
+        if (points.length < 3) {
+          plotStatus.textContent = `Počet bodů: ${points.length}. Přidejte alespoň ${3 - points.length} další bod(y).`;
+          return;
+        }
+
+        if (!isClosed) {
+          plotStatus.textContent = `Počet bodů: ${points.length}. Nyní klikněte na "Uzavřít tvar".`;
+          return;
+        }
+
+        plotStatus.textContent = `Tvar je uzavřen. Počet stran: ${points.length}. Doplňte délky stran níže.`;
+      }
+
+    function buildSideInputs() {
+        if (!isClosed || points.length < 3) {
+            sideInputs.innerHTML = '<p class="muted-text">Nejprve zakreslete a uzavřete tvar pozemku.</p>';
+            return;
+        }
+
+        let html = '';
+        for (let i = 0; i < points.length; i++) {
+            const current = points[i];
+            const next = points[(i + 1) % points.length];
+            const initialLength = getDistance(current, next) / 20;
+
+            html += `
+      <div class="form-group side-group">
+        <label for="side-${i}">Strana ${i + 1} (m)</label>
+        <input
+          type="number"
+          id="side-${i}"
+          class="side-length-input"
+          min="0"
+          step="0.1"
+          value="${initialLength.toFixed(1)}"
+        >
+      </div>
+    `;
+        }
+
+        sideInputs.innerHTML = html;
+
+        document.querySelectorAll('.side-length-input').forEach((input) => {
+            input.addEventListener('input', () => {
+                rebuildShapeFromLengths();
+            });
+        });
+    }
+
+      function getSideLengths() {
+        const inputs = document.querySelectorAll('.side-length-input');
+        return Array.from(inputs).map((input) => Number(input.value) || 0);
+      }
+
+      function updateAll() {
+        renderShape();
+        renderPoints();
+        updateStatus();
+        buildSideInputs();
+      }
+
+      svg.addEventListener('click', (event) => {
+        if (isClosed) return;
+
+        const pt = svg.createSVGPoint();
+        pt.x = event.clientX;
+        pt.y = event.clientY;
+
+        const svgPoint = pt.matrixTransform(svg.getScreenCTM().inverse());
+        points.push({
+          x: Math.max(10, Math.min(790, svgPoint.x)),
+          y: Math.max(10, Math.min(490, svgPoint.y))
+        });
+
+        renderShape();
+        renderPoints();
+        updateStatus();
+      });
+
+    closeShapeBtn.addEventListener('click', () => {
+        if (points.length < 3) {
+            alert('Pro uzavření tvaru musíte zadat alespoň 3 body.');
+            return;
+        }
+
+        isClosed = true;
+        captureBaseDirections();
+        updateAll();
+    });
+
+      undoPointBtn.addEventListener('click', () => {
+        if (isClosed) {
+          alert('Nejprve klikněte na "Vymazat vše", pokud chcete tvar upravit.');
+          return;
+        }
+
+        points.pop();
+        renderShape();
+        renderPoints();
+        updateStatus();
+      });
+
+    resetPlotBtn.addEventListener('click', () => {
+        points.length = 0;
+        isClosed = false;
+        baseDirections = [];
+        originalStartPoint = null;
+        resultPerimeter.textContent = '0 m';
+        resultOpenings.textContent = '0 m';
+        resultFenceLength.textContent = '0 m';
+        resultPrice.textContent = '0 Kč';
+        updateAll();
+    });
+
+      calculateBtn.addEventListener('click', () => {
+        if (!isClosed || points.length < 3) {
+          alert('Nejprve zakreslete a uzavřete tvar pozemku.');
+          return;
+        }
+
+        const sideLengths = getSideLengths();
+        const hasEmpty = sideLengths.some((value) => value <= 0);
+
+        if (hasEmpty) {
+          alert('Vyplňte prosím všechny délky stran.');
+          return;
+        }
+
+        const perimeter = sideLengths.reduce((sum, value) => sum + value, 0);
+        const wicketCount = Number(gateWicketCount.value) || 0;
+        const wicketWidth = Number(gateWicketWidth.value) || 0;
+        const bigGateCount = Number(gateCount.value) || 0;
+        const bigGateWidth = Number(gateWidth.value) || 0;
+
+        const openingsWidth = (wicketCount * wicketWidth) + (bigGateCount * bigGateWidth);
+        const fenceLength = Math.max(perimeter - openingsWidth, 0);
+
+        const type = fenceType.value;
+        const height = fenceHeight.value;
+        const selectedPricing = prices[type][height];
+
+        const fencePrice = fenceLength * selectedPricing.perMeter;
+        const wicketPrice = wicketCount * selectedPricing.wicket;
+        const gatePrice = bigGateCount * selectedPricing.gate;
+
+        const totalPrice = fencePrice + wicketPrice + gatePrice;
+
+        resultPerimeter.textContent = `${formatNumber(perimeter)} m`;
+        resultOpenings.textContent = `${formatNumber(openingsWidth)} m`;
+        resultFenceLength.textContent = `${formatNumber(fenceLength)} m`;
+        resultPrice.textContent = formatCurrency(totalPrice);
+      });
+
+      drawGrid();
+      updateAll();
+    })();</script>
+</body>
+</html>

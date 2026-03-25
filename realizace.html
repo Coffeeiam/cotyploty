@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Realizace | Portfolio</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://use.typekit.net/xgv5qyv.css">
+</head>
+<body>
+
+    <header class="header" id="top">
+        <div class="nav-wrap">
+            <a href="index.html" class="nav-brand">
+                <img src="images/logo.png" alt="Logo" class="logo-img">
+            </a>
+
+            <button class="burger" id="burger" aria-label="Otevřít menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="index.html#pricing" class="nav-link">Nacenění</a>
+                <a href="realizace.html" class="nav-link">Realizace</a>
+                <a href="index.html#contact" class="nav-link">Kontakty</a>
+                <!--<a href="konfigurator.html" class="nav-link">Konfigurátor</a> -->
+            </nav>
+        </div>
+    </header>
+
+    <main class="section">
+
+        <div class="section-heading">
+            <p class="section-kicker">PORTFOLIO</p>
+            <h1>Realizace</h1>
+            <p class="section-text">
+                Ukázky projektů. Kliknutím můžeš otevřít detail (později můžeš doplnit).
+            </p>
+        </div>
+
+        <div class="gallery-grid">
+
+            <div class="gallery-item" data-index="0">
+                <img src="images/ukazka1.JPG" alt="Ukázka realizace 1">
+            </div>
+
+            <div class="gallery-item" data-index="1">
+                <img src="images/ukazka2.JPG" alt="Ukázka realizace 2">
+            </div>
+
+            <div class="gallery-item" data-index="2">
+                <img src="images/ukazka3.JPG" alt="Ukázka realizace 3">
+            </div>
+
+            <div class="gallery-item" data-index="3">
+                <img src="images/ukazka4.JPG" alt="Ukázka realizace 4">
+            </div>
+
+            <div class="gallery-item" data-index="4">
+                <img src="images/ukazka5.jpg" alt="Ukázka realizace 5">
+            </div>
+
+            <div class="gallery-item" data-index="5">
+                <img src="images/ukazka6.JPG" alt="Ukázka realizace 6">
+            </div>
+
+            <div class="gallery-item" data-index="6">
+                <img src="images/ukazka7.JPG" alt="Ukázka realizace 7">
+            </div>
+
+            <div class="gallery-item" data-index="7">
+                <img src="images/ukazka8.JPG" alt="Ukázka realizace 8">
+            </div>
+
+            <div class="gallery-item" data-index="8">
+                <img src="images/ukazka9.JPG" alt="Ukázka realizace 9">
+            </div>
+
+            <div class="gallery-item" data-index="9">
+                <img src="images/ukazka10.jpg" alt="Ukázka realizace 10">
+            </div>
+            <!-- DUPLIKUJ PODLE POTŘEBY -->
+
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 ASH design.Všechna práva vyhrazena.</p>
+    </footer>
+
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" id="lightboxClose">&times;</span>
+        <img class="lightbox-image" id="lightboxImage" alt="Zvětšená fotografie">
+        <button class="lightbox-prev" id="lightboxPrev">&#10094;</button>
+        <button class="lightbox-next" id="lightboxNext">&#10095;</button>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
+
