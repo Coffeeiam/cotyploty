@@ -480,11 +480,17 @@ a {
     font-weight: 700;
 }
 
-.contact-item a {
+.contact-item a,
+.contact-detail {
     color: var(--text);
     font-size: 1.05rem;
     font-weight: 600;
     word-break: break-word;
+}
+
+.contact-detail {
+    margin: 0;
+    line-height: 1.55;
 }
 
 /* FOOTER */
